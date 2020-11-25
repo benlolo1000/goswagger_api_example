@@ -1,0 +1,278 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: medicare records
+
+consumes: 
+  - application/json
+produces: 
+  - application/json
+
+paths:
+  /register:
+    post:
+      tags:
+        - register
+      summary: allows new users to register
+      operationId: register
+      parameters:
+        - in: body
+          name: register
+          description: the user to create
+          schema:
+            $ref: '#/definitions/register'
+      responses:
+        200:
+          description: Succesful registration
+          schema:
+            $ref: '#/definitions/responseCode'
+        401:
+          description: Unauthorized Error
+          schema:
+            $ref: '#/definitions/responseCode'
+        406:
+          description: Not Acceptable Error
+          schema:
+            $ref: '#/definitions/responseCode'
+        409:
+          description: Conflict Error
+          schema:
+            $ref: '#/definitions/responseCode'
+        500:
+          description: Error when logging in
+          schema:
+            $ref: '#/definitions/responseCode'
+
+  /login:
+    post:
+      tags:
+        - login
+      summary: allows new users to login
+      operationId: login
+      parameters:
+        - in: body
+          name: login
+          description: the user to log in
+          schema:
+            $ref: '#/definitions/login'
+      responses:
+        200:
+          description: Succesful login
+          schema:
+            $ref: '#/definitions/jwtCode'
+        401:
+          description: Unauthorized Error
+          schema:
+            $ref: '#/definitions/responseCode'
+        403:
+          description: Forbidden Error
+          schema:
+            $ref: '#/definitions/responseCode'
+        406:
+          description: Not Acceptable Error
+          schema:
+            $ref: '#/definitions/responseCode'
+        500:
+          description: Error when logging in
+          schema:
+            $ref: '#/definitions/responseCode'
+
+  /records: 
+    get:
+      security:
+        - APIKeyHeader: []
+      tags: 
+        - records
+      summary: Returns a list of records.
+      operationId: getRecordsList
+      parameters:
+        - in: query
+          type: string
+          name: city
+        - in: query
+          type: string
+          name: state
+        - in: query
+          type: string
+          name: drugName
+        - in: query
+          type: string
+          name: specialty
+        - in: body
+          name: records
+          schema:
+            $ref: '#/definitions/records'
+      responses:
+        200:
+          description: A JSON object containing an array of records
+          schema: 
+            type: array
+            items:
+              $ref: '#/definitions/records'
+        403:
+          description: Forbidden Error
+          schema:
+            $ref: '#/definitions/responseCode'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responseCode'
+        500:
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responseCode'
+
+  /record:
+    get:
+      security:
+        - APIKeyHeader: []
+      tags: 
+        - record
+      summary: returns a record specified by ID.
+      operationId: getSingleRecord
+      parameters:
+        - in: query
+          type: string
+          name: id
+          required: true
+        - in: body
+          name: record
+          schema:
+            $ref: '#/definitions/record'
+      responses:
+        200:
+          description: A JSON object containing a record
+          schema:
+            $ref: '#/definitions/record'
+        403:
+          description: Forbidden Error
+          schema:
+            $ref: '#/definitions/responseCode'
+        404:
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responseCode'
+        500:
+          description: Internal Server Error 
+          schema:
+            $ref: '#/definitions/responseCode'
+
+
+definitions:
+
+  responseCode:
+    properties:
+        code:
+          type: string
+        message:
+          type: string
+
+  jwtCode:
+    properties:
+        jwt:
+          type: string
+        code:
+          type: string
+        message:
+          type: string
+
+  register:
+    properties:
+        email:
+          type: string
+        password:
+          type: string
+        confirmPassword:
+          type: string
+    required:
+        - email
+        - password
+        - confirmPassword
+  
+  login:
+    properties:
+        email:
+          type: string
+        password:
+          type: string
+    required:
+        - email
+        - password
+        
+  records:
+    properties:
+      id:
+        type: string
+      lastName:
+        type: string
+      firstName:
+        type: string
+      city:
+        type: string
+      state:
+        type: string
+      specialty:
+        type: string
+      drugName:
+        type: string
+      genericName:
+        type: string
+
+  record:
+    properties:
+      id:
+        type: string
+      lastName:
+        type: string
+      firstName:
+        type: string
+      city:
+        type: string
+      state:
+        type: string
+      specialty:
+        type: string
+      drugName:
+        type: string
+      genericName:
+        type: string
+      active:
+        type: string
+      beneCount:
+        type: string
+      beneCountGe65:
+        type: string
+      beneCountGe65Flag:
+        type: string
+      beneCountNum:
+        type: string
+      ge65SuppressFlag:
+        type: string
+      npi:
+        type: string
+      total30DayFillCount:
+        type: string
+      total30DayFillCountGe65:
+        type: string
+      totalClaimCount:
+        type: string
+      totalClaimCountGe65:
+        type: string
+      totalClaimCountNum:
+        type: string
+      totalDaySupply:
+        type: string
+      totalDaySupplyGe65:
+        type: string
+      totalDrugCost:
+        type: string
+      totalDrugCostNum:
+        type: string
+      totalDrugcostGe65:
+        type: string
+        
+securityDefinitions:
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: X-API-Key
